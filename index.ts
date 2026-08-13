@@ -4,9 +4,12 @@ const BUCKET     = 'uploads'
 const SIGNED_SEC = 600                     // app.js 의 SIGNED_SEC 과 맞추기
 const CODE_RE    = /^[A-HJ-NP-Z2-9]{8}$/    // SQL check 와 동일
 
+const ALLOWED_ORIGIN = 'https://your-app.com'
 const cors = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Vary': 'Origin',
 }
 
 function json(body: unknown, status = 200) {
@@ -18,6 +21,7 @@ function json(body: unknown, status = 200) {
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
+  if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405)   // ← 이 줄 추가
 
   try {
   let body: unknown
