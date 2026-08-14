@@ -5,7 +5,7 @@ if (!SUPABASE_URL || !SUPABASE_KEY)
   throw new Error("SUPABASE_URL / SUPABASE_KEY 없음");
 
 writeFileSync(
-  "config.js",
+  "public/config.js",
   `export const SUPABASE_URL = ${JSON.stringify(SUPABASE_URL)}\n` +
     `export const SUPABASE_KEY = ${JSON.stringify(SUPABASE_KEY)}\n`,
 );

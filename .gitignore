@@ -9,3 +9,4 @@ supabase/.env
 supabase/.temp
 supabase/functions/claim/.npmrc
 config.js
+public/config.js
