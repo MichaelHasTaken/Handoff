@@ -58,7 +58,7 @@ A few smaller decisions:
   lookups; rows and files remain. Manual cleanup, or a scheduled job (planned).
 - **No rate limiting.** The Edge Function is public. This can't leak data, but it
   can burn the free-tier quota.
-- **A leaked signed URL works until it expires** (10 minutes). The function controls
+- **A leaked signed URL works until it expires** (5 minutes). The function controls
   issuance, not use — the URL is a bearer token by design.
 - **Anonymous uploads are open**, which is the point, but there's no moderation or
   abuse reporting. Hence: demo only.

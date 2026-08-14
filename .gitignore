@@ -8,3 +8,4 @@ pre-deploy-tests.md
 supabase/.env
 supabase/.temp
 supabase/functions/claim/.npmrc
+config.js
