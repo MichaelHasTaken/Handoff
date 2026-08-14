@@ -1,0 +1,10 @@
+.vscode/
+node_modules/
+rand.txt
+.DS_Store
+schema_dev.sql
+security-handoff.md
+pre-deploy-tests.md
+supabase/.env
+supabase/.temp
+supabase/functions/claim/.npmrc

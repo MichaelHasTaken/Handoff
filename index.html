@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Handoff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="shell">
+
+  <header class="masthead">
+    <span class="mark">HANDOFF</span>
+    <span class="mark-note">one file &middot; one claim</span>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab is-active" id="tabSend" type="button">Send a file</button>
+    <button class="tab" id="tabClaim" type="button">Claim a file</button>
+  </nav>
+
+  <main>
+
+    <!-- ─── SEND ─────────────────────────────────────── -->
+    <section class="panel" id="panelSend">
+
+      <label class="drop" id="drop" for="fileInput">
+        <input type="file" id="fileInput" class="drop-input">
+        <span class="drop-icon" aria-hidden="true">&#8593;</span>
+        <span class="drop-title" id="dropTitle">Drop a file, or click to choose</span>
+        <span class="drop-note" id="dropNote">Up to 49&nbsp;MB</span>
+      </label>
+
+      <div class="field">
+        <div class="field-head">
+          <label class="label" for="descInput">What is this?</label>
+          <span class="counter" id="descCount"></span>
+        </div>
+        <textarea id="descInput" class="input textarea" rows="3"
+                  placeholder="Scanned contract, page 4 is the one to sign."></textarea>
+        <p class="hint">The person claiming the file sees this before downloading.</p>
+      </div>
+
+      <button class="btn btn-primary" id="sendBtn" type="button">Create claim code</button>
+      <p class="msg" id="sendMsg" hidden></p>
+
+    </section>
+
+    <!-- ─── STUB (result of a send) ──────────────────── -->
+    <section class="panel" id="panelStub" hidden>
+
+      <div class="stub">
+        <div class="stub-head">
+          <span class="stub-label">Claim code</span>
+          <span class="stub-void">Void after one claim</span>
+        </div>
+
+        <p class="stub-code" id="stubCode">--------</p>
+
+        <div class="stub-perf"></div>
+
+        <dl class="stub-meta">
+          <div><dt>File</dt><dd id="stubFile"></dd></div>
+          <div><dt>Expires</dt><dd id="stubExpiry"></dd></div>
+        </dl>
+      </div>
+
+      <div class="row">
+        <button class="btn btn-quiet" id="copyCodeBtn" type="button">Copy code</button>
+        <button class="btn btn-quiet" id="copyLinkBtn" type="button">Copy link</button>
+      </div>
+
+      <p class="hint hint-center">Give the code to one person. The first claim consumes it.</p>
+      <button class="btn btn-text" id="againBtn" type="button">Send another file</button>
+
+    </section>
+
+    <!-- ─── CLAIM ────────────────────────────────────── -->
+    <section class="panel" id="panelClaim" hidden>
+
+      <div class="field">
+        <label class="label" for="codeInput">Enter the claim code</label>
+        <input type="text" id="codeInput" class="input code-input" maxlength="8"
+               placeholder="XXXXXXXX" autocomplete="off" spellcheck="false">
+      </div>
+
+      <button class="btn btn-primary" id="lookupBtn" type="button">Look up</button>
+      <p class="msg" id="claimMsg" hidden></p>
+
+<!-- peek result -->
+      <div class="found ticket" id="found" hidden>
+        <div class="ticket-half ticket-top">
+          <span class="found-label">Waiting for you</span>
+          <p class="found-desc" id="foundDesc"></p>
+          <dl class="stub-meta">
+            <div><dt>File</dt><dd id="foundFile"></dd></div>
+            <div><dt>Size</dt><dd id="foundSize"></dd></div>
+          </dl>
+        </div>
+
+        <div class="ticket-perf"></div>
+
+        <div class="ticket-half ticket-bot">
+          <button class="btn btn-primary" id="downloadBtn" type="button">Download file</button>
+          <p class="hint">Downloading consumes the code. It won't work again.</p>
+        </div>
+      </div>
+
+      <!-- after a successful claim -->
+      <div class="found found-done" id="done" hidden>
+        <span class="found-label">Claimed</span>
+        <p class="found-desc" id="doneName"></p>
+        <button class="btn btn-quiet" id="retryBtn" type="button">Download again</button>
+        <p class="hint" id="retryHint"></p>
+      </div>
+
+    </section>
+
+  </main>
+
+  <p class="foot">Links stop working 24 hours after upload. Don't use this for anything sensitive.</p>
+
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
