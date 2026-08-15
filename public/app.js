@@ -212,7 +212,9 @@ els.sendBtn.onclick = async () => {
   busy(els.sendBtn, true, "Uploading…");
   try {
     // 1. Storage 에 파일
-    const up = await supabase.storage.from(BUCKET).upload(path, pickedFile);
+    const up = await supabase.storage.from(BUCKET).upload(path, pickedFile, {
+      contentType: "application/octet-stream",
+    });
     if (up.error) throw up.error;
 
     // 2. DB 에 메타데이터

@@ -3,7 +3,7 @@
 One-time file transfer. Upload a file, get an 8-character claim code, hand the code
 to one person. The first download consumes it.
 
-**[Live demo](https://your-app.vercel.app)** · Demo only — don't upload anything sensitive.
+**[Live demo](https://handoff-zeta-seven.vercel.app)** · Demo only — don't upload anything sensitive.
 
 <!-- 스크린샷을 넣으면 좋습니다:  ![screenshot](docs/screenshot.png) -->
 
@@ -25,21 +25,29 @@ short-lived signed URL and the browser fetches from Storage directly.
 
 ## Security model
 
-There is no backend server, so the browser talks to Supabase directly. Everything
-the anonymous key can do is defined by Postgres RLS policies:
+The publishable key is in the client by design — it's meant to be public, and
+it's visible in the `apikey` request header regardless of where it's stored.
+The security boundary is Postgres RLS, not key secrecy.
 
-| | anon can |
+Verified from the browser console using the anon client, with files present in
+the bucket:
+
+| attempt | result |
 |---|---|
-| `files` table | `INSERT` only — no `SELECT`, so codes can't be enumerated |
-| Storage bucket | `INSERT` only — no `SELECT`, so files can't be listed |
-| `peek_file()` | call with a valid code — returns metadata, never the storage path |
-| `claim_file()` | **no** — Edge Function only |
+| `storage.from('uploads').list()` | `data: []` |
+| `storage.createSignedUrl(...)` | `Object not found` |
+| `from('files').select('*')` | `permission denied` |
+| `rpc('claim_file', ...)` | `permission denied` |
+| `rpc('peek_file', <valid code>)` | `200` — works as intended |
 
-Signed URLs are issued by an Edge Function holding `service_role`, which is injected
-at runtime and never reaches the client. Because the browser has no Storage read
-permission, the only path from a code to a file goes through that function.
+`anon` can only `INSERT` — into `files` and into the bucket. It cannot list,
+read, update or delete either. Signed URLs are issued by an Edge Function holding
+`service_role`, injected at runtime and never sent to the client. Because the
+browser has no Storage read permission, the only path from a code to a file runs
+through that function.
 
-A few smaller decisions:
+<details>
+<summary>Smaller decisions</summary>
 
 - **Codes** are 8 chars from a 32-symbol alphabet (`I`, `O`, `0`, `1` excluded for
   legibility) generated with `crypto.getRandomValues` — 32⁸ ≈ 1.1 trillion.
@@ -48,9 +56,13 @@ A few smaller decisions:
 - **`storage_path` is `UNIQUE`.** A signed URL contains its object path in plain
   text; without this, a leaked URL's path could be re-registered under a new code
   to regain access after expiry.
-- **Downloads force `Content-Disposition: attachment`**, so uploaded `.html` / `.svg`
-  can't be rendered in a browser. This is why file extensions aren't restricted.
+- **Files are served from the Storage origin, not the app origin**, and downloads
+  set `Content-Disposition: attachment` with an opaque content type. An uploaded
+  `.html` / `.svg` therefore can't become stored XSS against this app even if a
+  browser chooses to render it.
 - **All user-supplied text is rendered with `textContent`**, never `innerHTML`.
+
+</details>
 
 ## Limitations
 
