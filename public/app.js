@@ -387,10 +387,8 @@ els.downloadBtn.onclick = async () => {
 
 const urlCode = new URLSearchParams(location.search).get("code");
 if (urlCode) {
-  els.codeInput.value = urlCode
-    .toUpperCase()
-    .replace(/[^A-HJ-NP-Z2-9]/g, "")
-    .slice(0, 8);
+  els.codeInput.value = urlCode;
+  els.codeInput.dispatchEvent(new Event("input")); // 정규화 로직 재사용
   openTab("claim");
   if (CODE_RE.test(els.codeInput.value)) els.lookupBtn.click();
 }
